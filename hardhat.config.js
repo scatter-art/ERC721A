@@ -22,12 +22,12 @@ module.exports = {
   networks: {
     hardhat: {},
     mainnet: {
-      url: process.env.MAINNET_URL || '',
+      url: process.env.MAINNET_RPC_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 1,
     },
     rinkeby: {
-      url: process.env.RINKEBY_URL || '',
+      url: process.env.RINKEBY_RPC_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 4,
     },

@@ -13,7 +13,7 @@ async function main() {
 
   await nft.deployed();
 
-  console.log('Flurks deployed to:', nft.address);
+  console.log('NFT contract deployed to:', nft.address);
 
   // wait two minutes before verifying
   await sleep(60 * 2 * 1000);

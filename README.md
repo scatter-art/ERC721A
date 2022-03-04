@@ -1,117 +1,125 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-The goal of ERC721A is to provide a fully compliant implementation of IERC721 with significant gas savings for minting multiple NFTs in a single transaction. This project and implementation will be updated regularly and will continue to stay up to date with best practices.
+This contract is a fork of [Azuki's](https://twitter.com/azukizen) [ERC721A](https://github.com/chiru-labs/ERC721A) contract. This version allows you to pause and unpause sales, reveal and unreveal artwork, and customize parameters like token price, max number to mint, and max number in collection. It is currently optimized for PFP collections as opposed to 1/1s.
 
-The [Azuki](https://twitter.com/azukizen) team created ERC721A for its sale on 1/12/22. There was significant demand for 8700 tokens made available to the public, and all were minted within minutes. The network BASEFEE remained low despite huge demand, resulting in low gas costs for minters, while minimizing network disruption for the wider ecosystem as well.
+## About this guide
 
-![Gas Savings](https://pbs.twimg.com/media/FIdILKpVQAEQ_5U?format=jpg&name=medium)
+This guide assumes you have:
 
-For more information on how ERC721A works under the hood, please visit our [blog](https://www.azuki.com/erc721a). To find other projects that are using ERC721A, please visit [erc721a.org](https://www.erc721a.org) and our [curated projects list](https://github.com/chiru-labs/ERC721A/blob/main/projects.md).
+1. access to the Linux command line
+2. a working installation of [NodeJS](https://nodejs.org)
+3. basic familiarity with basic CLI tools like `git`, `cd`, and `npm`
+4. a text editor like VS Code
 
-**Chiru Labs is not liable for any outcomes as a result of using ERC721A.** DYOR.
+There are multiple steps involved in deploying this NFT contract:
 
-<!-- Installation -->
+1. Customize Flurks.sol in a text editor with your own values.
+2. Deploy the contract to the Rinkeby test network in order to test.
+3. After testing, deploy the contract to the Ethereum Mainnet.
 
-## Installation
+In this guide we will use a Javascript command-line tool called Hardhat to deploy our contracts. Alternatively, you could simply modify the contract then paste it into a browser-based tool to deploy like [Remix IDE](https://remix.ethereum.org/).
 
-```sh
+## Setup
 
-npm install --save-dev erc721a
+1. Clone this repo
 
-```
+- `git clone https://github.com/scatter-art/ERC721A.git`
 
-<!-- USAGE EXAMPLES -->
+2. Enter the directory
 
-## Usage
+- `cd ERC721A`
 
-Once installed, you can use the contracts in the library by importing them:
+3. Install dependencies
 
-```solidity
-pragma solidity ^0.8.4;
+- `npm install`
 
-import "erc721a/contracts/ERC721A.sol";
-
-contract Azuki is ERC721A {
-  constructor() ERC721A("Azuki", "AZUKI") {}
-
-  function mint(uint256 quantity) external payable {
-    // _safeMint's second argument now takes in a quantity, not a tokenId.
-    _safeMint(msg.sender, quantity);
-  }
-}
+4. Configure environment variables by creating a `.env` file at the root of the project (`ERC721A/.env`). The file should contain the following:
 
 ```
+MAINNET_RPC_URL=https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 
-<!-- ROADMAP -->
+RINKEBY_RPC_URL=https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 
-## Roadmap
+ETHERSCAN_API_KEY=GDBRZ227RPV6YFG2QY1SCKE6IG3P7FG7R6
 
-- [] Support ERC721 Upgradeable
-- [] Add more documentation on benefits of using ERC721A
-- [] Increase test coverage
+PRIVATE_KEY=123456789ABCDEFG
 
-See the [open issues](https://github.com/chiru-labs/ERC721A/issues) for a full list of proposed features (and known issues).
+REPORT_GAS=true
+```
 
-<!-- CONTRIBUTING -->
+Get your own RPC URLs by copy pasting the defaults found in Metamask > Settings > Networks, or by signing up for an account at [Infura](https://infura.io/) or [Alchemy](https://www.alchemy.com/).
 
-## Contributing
+Get your own Etherscan API key from [Etherscan](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+### PRIVATE KEY
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Since we will be using the command-line to deploy our contract (as opposed to Remix which uses the browser), we need to export it from Metamask first. To do so, [follow this guide](https://metamask.zendesk.com/hc/en-us/articles/360015289632-How-to-Export-an-Account-Private-Key).
 
-Don't forget to give the project a star! Thanks again!
+The private key is required to sign the deployment transaction using your wallet, and establish yourself as the owner of your contract.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+It is worth repeating that anyone holding your private key has carte-blanche access to all assets in that account, so _be careful and do not share it with anyone_. That said, it is not a bad idea to start with a fresh Metamask wallet.
 
-<!-- ROADMAP -->
+Once you have customized the above variables in your .env file, move to the next step.
 
-### Running tests locally
+## Editing
 
-1. `npm install`
-2. `npm run test`
+5. Customize `contracts/Flurks.sol` by replacing the Flurks data with your own values. You need to modify the following parameters using a text editor:
 
-<!-- LICENSE -->
+- filename
+- contract name on line 10
+- `notRevealedUri` on line 18
+- `tokenPrice` on line 20
+- `maxNfts` on line 21
+- `maxBatchSize` on line 22
+- the name and symbol in the constructor on line 24
 
-## License
+Note: `notRevealedUri` is an IPFS or http link to your unrevealed artwork placeholder. Don't worry if you don't have that art uploaded yet, we can modify this value at any time using the `setNotRevealedURI` method. In other words, we can deploy the contract without it.
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+After you have made those customizations we need to customize the deployment script.
 
-<!-- CONTACT -->
+6. Customize `scripts/deploy.js`. The only parameter which needs to be modified here is 'Flurks' on line 11. Change it to:
 
-## Contact
+```
+  const NFT = await ethers.getContractFactory('MyCollectionName');
+```
 
-- 2pm.flow (owner) - [@2pmflow](https://twitter.com/2pmflow)
-- location tba (owner) - [@locationtba](https://twitter.com/locationtba)
-- cygaar (maintainer) - [@cygaar_dev](https://twitter.com/cygaar_dev)
-- vectorized.eth (maintainer) - [@vectorized_dev](https://twitter.com/vectorized_dev)
+to match the contract name value you set on line 10 in the contract:
 
-Project Link: [https://github.com/chiru-labs/ERC721A](https://github.com/chiru-labs/ERC721A)
+```
+contract MyCollectionName is ERC721A, Ownable {
+```
 
-<!-- MARKDOWN LINKS & IMAGES -->
+7. Compile the contract by running `npm run compile` (which is an alias for `npx hardhat compile`). This will identify any errors in your code. You will need to resolve those before moving to the next step.
 
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+## Deployment
 
-[contributors-shield]: https://img.shields.io/github/contributors/chiru-labs/ERC721A.svg?style=for-the-badge
-[contributors-url]: https://github.com/chiru-labs/ERC721A/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/chiru-labs/ERC721A.svg?style=for-the-badge
-[forks-url]: https://github.com/chiru-labs/ERC721A/network/members
-[stars-shield]: https://img.shields.io/github/stars/chiru-labs/ERC721A.svg?style=for-the-badge
-[stars-url]: https://github.com/chiru-labs/ERC721A/stargazers
-[issues-shield]: https://img.shields.io/github/issues/chiru-labs/ERC721A.svg?style=for-the-badge
-[issues-url]: https://github.com/chiru-labs/ERC721A/issues
-[license-shield]: https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge
-[license-url]: https://github.com/chiru-labs/ERC721A/blob/main/LICENSE.txt
-[product-screenshot]: images/screenshot.png
+8. Load some Rinkeby ETH in your Metamask wallet. Deploying to testnet requires some Rinkeby ETH, aka Monopoly money. You can obtain some for free here: https://faucets.chain.link/rinkeby. To confirm whether you have any ETH balance on Rinkeby, change to the Rinkeby network on Metamask with the desired wallet. You don't need very much to deploy since everything is cheaper on testnet.
+
+9. Deploy your NFT contract to Rinkeby test network. Do this by running `npm run deploy:test` (which is an alias of `npx hardhat run --network rinkeby ./scripts/deploy.js`). If all goes well you'll see a confirmation message like this:
+
+```
+$ npm run deploy:test
+
+> erc721a@3.0.0 deploy:test
+> hardhat run --network rinkeby ./scripts/deploy.js
+
+NFT Contract deployed to: 0xc9709E1f5f46567e8eE7A0FC40D5092ADB5abE41
+Nothing to compile
+Compiling 1 file with 0.8.4
+Successfully submitted source code for contract
+contracts/Flurks.sol:Flurks at 0xc9709E1f5f46567e8eE7A0FC40D5092ADB5abE41
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract Flurks on Etherscan.
+https://rinkeby.etherscan.io/address/0xc9709E1f5f46567e8eE7A0FC40D5092ADB5abE41#code
+```
+
+Verification should take a couple minutes.
+
+10. Your contract is now deployed and verified on Rinkeby testnet. You can visit and interact with it here: https://rinkeby.etherscan.io/address/{your contract address goes here}, eg. https://rinkeby.etherscan.io/address/0xc9709E1f5f46567e8eE7A0FC40D5092ADB5abE41.
+
+From the WriteContract tab, you can start by unpausing the sale then minting yourself some NFTs.
+
+11. Deploying to Mainnet is pretty much the same process, you just have to change the network flag during deployment and make sure you have enough real ETH in the same wallet. Contact us before doing so, so we can double-check everything works well on Rinkeby first.
