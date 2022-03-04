@@ -14,6 +14,7 @@
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint --ignore-path .gitignore . --fix",
     "lint:sol": "prettier --write \"contracts/**/*.sol\"",
+    "compile": "hardhat compile",
     "deploy:test": "hardhat run --network rinkeby ./scripts/deploy.js"
   },
   "dependencies": {
