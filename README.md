@@ -8,7 +8,7 @@ This contract is a fork of [Azuki's](https://twitter.com/azukizen) [ERC721A](htt
 
 This guide assumes you have:
 
-1. access to the linux command line
+1. access to the Linux command line
 2. a working installation of [NodeJS](https://nodejs.org)
 3. basic familiarity with basic CLI tools like `git`, `cd`, and `npm`
 4. a text editor like VS Code
@@ -91,13 +91,13 @@ to match the contract name value you set on line 10 in the contract:
 contract MyCollectionName is ERC721A, Ownable {
 ```
 
-7. Compile the contract by running `npm run compile` (which is an alias for `hardhat compile`). This will identify any errors in your code. You will need to resolve those before moving to the next step.
+7. Compile the contract by running `npm run compile` (which is an alias for `npx hardhat compile`). This will identify any errors in your code. You will need to resolve those before moving to the next step.
 
 ## Deployment
 
-8. Load some Rinkeby ETH in your Metamask wallet. Deploying our contract to testnet requires some Rinkeby ETH, aka Monopoly money. You can obtain some for free here: https://faucets.chain.link/rinkeby. To confirm whether you have any ETH balance on Rinkeby, change to the Rinkeby network on Metamask with the desired wallet. You don't need very much to deploy since everything is cheaper on testnet.
+8. Load some Rinkeby ETH in your Metamask wallet. Deploying to testnet requires some Rinkeby ETH, aka Monopoly money. You can obtain some for free here: https://faucets.chain.link/rinkeby. To confirm whether you have any ETH balance on Rinkeby, change to the Rinkeby network on Metamask with the desired wallet. You don't need very much to deploy since everything is cheaper on testnet.
 
-9. Deploy your NFT contract to Rinkeby test network. Do this by running `npm run deploy:test` (which is an alias of `hardhat run --network rinkeby ./scripts/deploy.js`). If all goes well you'll see a confirmation message like this:
+9. Deploy your NFT contract to Rinkeby test network. Do this by running `npm run deploy:test` (which is an alias of `npx hardhat run --network rinkeby ./scripts/deploy.js`). If all goes well you'll see a confirmation message like this:
 
 ```
 $ npm run deploy:test
